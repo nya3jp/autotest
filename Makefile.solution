@@ -1,0 +1,103 @@
+# common Makefile for the solution
+
+ifeq ($(SRC),)
+ifeq ($(NOPATCH),)
+SRC_CANDS := $(wildcard *.patch)
+endif
+ifeq ($(SRC_CANDS),)
+SRC_CANDS := $(wildcard *.c *.cc *.cpp *.java)
+endif
+ifeq ($(words $SRC_CANDS),1)
+SRC := $(SRC_CANDS)
+endif
+endif
+
+ifeq ($(WINDIR),)
+PATHCONV := echo
+else
+PATHCONV := cygpath -wp
+endif
+
+JAVA_MAIN ?= Main
+EXE ?= a.exe
+JAVA_LIBS ?= $(wildcard *.jar)
+
+CC ?= gcc
+CXX ?= g++
+JAVAC ?= javac
+CFLAGS ?= -Wall -O2
+CXXFLAGS ?= -Wall -O2
+LDFLAGS ?= -lm
+
+JAVA_CLASSPATH = $(shell echo . $(JAVA_LIBS) | sed 's/ /:/g')
+
+ifeq ($(suffix $(SRC)),.patch)
+PATCHED_SRC := $(wildcard ./*.c ./*.cc ./*.cpp ./*.java)
+endif
+
+ifeq ($(findstring --no-print-directory,$(MAKEFLAGS)),)
+MAKEFLAGS += --no-print-directory
+endif
+
+export MAKE
+export TIMELIMIT
+
+all: compile
+
+### select a target suitable for $(SRC)
+
+# C
+ifeq ($(suffix $(SRC)),.c)
+$(EXE): $(SRC)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(SRC) $(LDFLAGS)
+endif
+
+# C++
+ifeq ($(suffix $(SRC)),.cc)
+$(EXE): $(SRC)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(SRC) $(LDFLAGS)
+endif
+ifeq ($(suffix $(SRC)),.cpp)
+$(EXE): $(SRC)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(SRC) $(LDFLAGS)
+endif
+
+# Java
+ifeq ($(suffix $(SRC)),.java)
+$(EXE): $(SRC)
+	$(JAVAC) $(JFLAGS) -d . -cp '$(shell $(PATHCONV) $(JAVA_CLASSPATH))' $(SRC)
+	@echo '#!/bin/sh' > $@
+	@printf "java -Xmx256m -Dline.separator='\012' -cp '%s' '%s'\n" "`$(PATHCONV) '$(JAVA_CLASSPATH)'`" '$(JAVA_MAIN)' >> $@
+	@chmod +x $@
+endif
+
+ifeq ($(suffix $(SRC)),.patch)
+$(EXE): $(SRC)
+	@rm -f *.c *.cc *.cpp *.java
+	@cp -f $(wildcard ../$(basename $(SRC))/*.c) \
+		   $(wildcard ../$(basename $(SRC))/*.cc) \
+		   $(wildcard ../$(basename $(SRC))/*.cpp) \
+		   $(wildcard ../$(basename $(SRC))/*.java) \
+		   ./
+	patch -p1 < $(SRC)
+	@$(MAKE) NOPATCH=yes
+endif
+
+### common targets
+
+compile: $(EXE) force
+
+run: $(EXE) force
+	@./$(EXE)
+
+src:
+	@echo $(SRC)
+
+clean:
+	rm -f ./$(EXE) ./*.class $(PATCHED_SRC)
+
+force:
+	@true
+
+.PHONY: all compile run src clean force
+

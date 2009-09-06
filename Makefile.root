@@ -1,0 +1,23 @@
+# common Makefile for the root directory
+
+PROBLEMS := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*/Makefile))))
+
+ifeq ($(findstring --no-print-directory,$(MAKEFLAGS)),)
+    MAKEFLAGS += --no-print-directory
+endif
+
+export MAKE
+
+all: check
+
+check: $(addprefix check-,$(PROBLEMS))
+check-%:
+	@printf "\\033[1;4;36m***** $*\\033[0m\n"
+	@$(MAKE) -C $* check
+
+clean: $(addprefix clean-,$(PROBLEMS))
+clean-%:
+	@printf "\\033[1;4;36m***** $*\\033[0m\n"
+	@$(MAKE) -C $* clean
+
+.PHONY: all check clean

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+## このスクリプトで./tests/以下に連番で入力ファイルを生成する．
+## あらかじめ作成した正当データを使いたい場合は，ここで
+## ./tests/に.diffファイルとしてコピーする．
+## データは全て改行コードLFで出力すること！
+
+## 他の外部プログラムを呼び出してももちろんOK
+## Javaを使う時は改行コードに注意！
+# 例:
+# javac -d ./tmp DataGen.java || exit 1
+# java -Dline.separator="
+# " -cp ./tmp DataGen || exit 1
+

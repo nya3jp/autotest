@@ -1,0 +1,12 @@
+# variable SRC is guessed if not set
+
+## ソースコードのファイル名(省略可)
+# SRC := sample.cc
+
+## Javaのmainメソッドがあるクラス名(省略するとMain)
+# JAVA_MAIN := Main
+
+## Javaの追加クラスパス(省略すると*.jar)
+# JAVA_CLASSPATH := $(wildcard *.jar)
+
+include ../../zzcommon/autotest/Makefile.solution

@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $testsdir = "./tests";
+
+system("gcc -O -o ./tmp/makediff.exe ./makediff.c -lm");
+$? == 0 or die;
+
+print "generating diffs: ";
+for(my $i = 1; $i <= 99; $i++) {
+    my $infile = "$testsdir/$i.in";
+    my $difffile = "$testsdir/$i.diff";
+    next unless (-f $infile);
+    if (-f $difffile) {
+        print "($i)";
+        next;
+    }
+    print "[$i";
+    system("./tmp/makediff.exe < $infile > $difffile");
+    $? == 0 or die;
+    print "]";
+}
+
+print "\n";
+

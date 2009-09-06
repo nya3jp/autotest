@@ -1,0 +1,13 @@
+#!/bin/sh
+
+infile=$1
+ansfile=$2
+outfile=$3
+
+res=`./dist.compare.pl $1 $2 $3 /dev/null 2>&1`
+
+if [ "$res" != 0 ]; then
+    exit 1
+fi
+
+exit 0

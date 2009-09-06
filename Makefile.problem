@@ -1,0 +1,65 @@
+# common Makefile for the problem directory
+
+JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*/Makefile))))
+REJECT_JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*@*/Makefile))))
+ACCEPT_JUDGES := $(filter-out $(REJECT_JUDGES),$(JUDGES))
+ONEJUDGE := $(firstword $(ACCEPT_JUDGES))
+
+TESTS_TEMPLATES := $(wildcard tests-template/*.in tests-template/*.diff)
+
+ifeq ($(findstring --no-print-directory,$(MAKEFLAGS)),)
+MAKEFLAGS += --no-print-directory
+endif
+
+export MAKE
+export TIMELIMIT
+
+all: check
+
+prepare: .prepared
+.prepared:
+	mkdir -p ./tmp ./tests
+	@touch .prepared
+
+tests: .tests
+.tests: .prepared $(TESTS_TEMPLATES)
+	@rm -f tests/*.in tests/*.diff
+	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/maketests.sh; fi
+	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
+	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/makediffs.sh; fi
+#	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "archive written to ./tests.tar.gz"
+	@touch .tests
+
+maketests.sh:
+
+ifeq ($(JUDGES),)
+check:
+	@printf "\\033[33mWARNING: No solution yet. skipping...\\033[0m\n"
+else
+check: compile $(JUDGES:%=check-%)
+	@printf "\\033[36mPASSED ALL TESTS.\\033[0m\n"
+endif
+
+check-%: compile-% .tests .prepared
+	@printf "\\033[32msolution \"$*\": \\033[0m"
+	@../zzcommon/autotest/checkone.sh $*
+
+compile: $(JUDGES:%=compile-%)
+
+compile-%:
+	@$(MAKE) -C $* compile
+
+run-one: compile-$(ONEJUDGE)
+	@$(MAKE) -C $(ONEJUDGE) run
+
+run-%: compile-%
+	@$(MAKE) -C $* run
+
+clean: $(JUDGES:%=clean-%)
+	rm -f ./.prepared ./.tests
+	rm -rf ./tests ./tmp ./tests.tar.gz
+
+clean-%:
+	@$(MAKE) -C $* clean
+
+.PHONY: all prepare tests check compile run-one

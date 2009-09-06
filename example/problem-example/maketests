@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Copy;
+
+my $maxi = 100;
+my $ncases = 20;
+srand(3939241084);
+
+my $templatedir = "./tests-template";
+my $testsdir = "./tests";
+
+system("rm -f $testsdir/*.in $testsdir/*.diff");
+
+my $index = 0;
+sub next_file {
+  $index++;
+  print "[$index]";
+  sprintf("%s/%d.in", $testsdir, $index);
+}
+
+print "generating tests: ";
+
+copy("$templatedir/sample1.in", &next_file()) or die;
+copy("$templatedir/sample2.in", &next_file()) or die;
+copy("$templatedir/sample3.in", &next_file()) or die;
+
+# random case
+for (1..$ncases){
+  open OUT, ">".&next_file or die;
+  printf OUT "%.5f %.5f\n", rand()*$maxi, rand()*$maxi;
+  printf OUT "%.5f %.5f\n", rand()*$maxi, rand()*$maxi;
+  close OUT;
+}
+
+print "\n";
+

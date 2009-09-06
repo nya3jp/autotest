@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+$| = 1;
+
+$testsdir = "./tests";
+
+system("g++ -O -o ./tmp/checktest.exe ./checktest.cc");
+$? == 0 or die;
+
+print "validating tests: ";
+for(my $i = 1; $i <= 99; $i++) {
+    next unless (-f "$testsdir/$i.in");
+    print "[$i";
+    system("./tmp/checktest.exe < $testsdir/$i.in");
+    $? == 0 or die;
+    print "]";
+}
+
+print "\n";

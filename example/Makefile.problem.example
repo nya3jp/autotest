@@ -1,0 +1,5 @@
+
+# ケースあたりの制限時間
+TIMELIMIT := 3
+
+include ../zzcommon/autotest/Makefile.problem
