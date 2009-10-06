@@ -4,4 +4,4 @@ TIMELIMIT := 3
 # 正答生成に使うソリューションの名前 (optional)
 #REFJUDGE := hoge
 
-include ../zzcommon/autotest/Makefile.problem
+include ../zzcommon/autotest/bits/Makefile.problem

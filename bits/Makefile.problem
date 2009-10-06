@@ -24,9 +24,9 @@ prepare: .prepared
 tests: .tests
 .tests: .prepared $(TESTS_TEMPLATES)
 	@rm -f tests/*.in tests/*.diff
-	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/maketests.sh; fi
+	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/bits/maketests.sh; fi
 	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
-	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/makediffs.sh; fi
+	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
 #	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "archive written to ./tests.tar.gz"
 	@touch .tests
 
@@ -42,7 +42,7 @@ endif
 
 check-%: compile-% .tests .prepared
 	@printf "\\033[32msolution \"$*\": \\033[0m"
-	@../zzcommon/autotest/checkone.sh $*
+	@../zzcommon/autotest/bits/checkone.sh $*
 
 compile: $(JUDGES:%=compile-%)
 

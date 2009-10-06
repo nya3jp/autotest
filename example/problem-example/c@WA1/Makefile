@@ -3,4 +3,4 @@
 # SRC := sample.cc
 # JAVA_MAIN := Main
 
-include ../../zzcommon/autotest/Makefile.solution
+include ../../zzcommon/autotest/bits/Makefile.solution

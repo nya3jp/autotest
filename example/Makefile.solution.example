@@ -9,4 +9,4 @@
 ## Javaの追加クラスパス(省略すると*.jar)
 # JAVA_CLASSPATH := $(wildcard *.jar)
 
-include ../../zzcommon/autotest/Makefile.solution
+include ../../zzcommon/autotest/bits/Makefile.solution

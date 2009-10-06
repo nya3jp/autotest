@@ -1,1 +1,1 @@
-include ../zzcommon/autotest/Makefile.problem
+include ../zzcommon/autotest/bits/Makefile.problem
