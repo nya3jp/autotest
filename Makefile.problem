@@ -3,7 +3,7 @@
 JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*/Makefile))))
 REJECT_JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*@*/Makefile))))
 ACCEPT_JUDGES := $(filter-out $(REJECT_JUDGES),$(JUDGES))
-ONEJUDGE := $(firstword $(ACCEPT_JUDGES))
+REFJUDGE ?= $(firstword $(ACCEPT_JUDGES))
 
 TESTS_TEMPLATES := $(wildcard tests-template/*.in tests-template/*.diff)
 
@@ -49,8 +49,8 @@ compile: $(JUDGES:%=compile-%)
 compile-%:
 	@$(MAKE) -C $* compile
 
-run-one: compile-$(ONEJUDGE)
-	@$(MAKE) -C $(ONEJUDGE) run
+run-one: compile-$(REFJUDGE)
+	@$(MAKE) -C $(REFJUDGE) run
 
 run-%: compile-%
 	@$(MAKE) -C $* run

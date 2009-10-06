@@ -56,14 +56,20 @@ for index in `seq 1 99`; do
     infile=./tests/$index.in
     if [ -f $infile ]; then
         difffile=./tests/$index.diff
+        namefile=./tests/.$index.name
         printf "[$index"
         atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > $tmpout`
         r=$?
         if [ $r != 0 ]; then
             if [ $r = 143 ]; then
-                printf ' \033[31mTLE!\033[0m]\n'
+                printf ' \033[31mTLE!\033[0m'
             else
-                printf ' \033[31mERROR!\033[0m]\n'
+                printf ' \033[31mERROR!\033[0m'
+            fi
+            if [ -f $namefile ]; then
+                printf '('`cat $namefile`')]\n'
+            else
+                printf ']\n'
             fi
             $ignore_fail
             exit
@@ -78,8 +84,12 @@ for index in `seq 1 99`; do
         if eval $valcmd > $tmpdet 2>&1 && [ ! -s "$tmpdet" ]; then
             printf "]"
         else
-            printf ' \033[31mFAILED!\033[0m]\n'
-            # TODO: ファイル名をできれば出力
+            printf ' \033[31mFAILED!\033[0m'
+            if [ -f $namefile ]; then
+                printf '('`cat $namefile`')]\n'
+            else
+                printf ']\n'
+            fi
             if [ "$ignore_fail" = "false" ]; then
                 cat $tmpdet
             fi

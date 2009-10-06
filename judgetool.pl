@@ -15,6 +15,8 @@ my $pid = fork;
 die "$!" unless defined $pid;
 
 if($pid == 0){
+  close STDERR;
+  open STDERR, '>/dev/null' or die $!;
   exec @ARGV;
   die "$! : $ARGV[0]";
 }
