@@ -1,5 +1,7 @@
-
 # ケースあたりの制限時間
 TIMELIMIT := 3
+
+# 正答生成に使うソリューションの名前 (optional)
+#REFJUDGE := hoge
 
 include ../zzcommon/autotest/Makefile.problem
