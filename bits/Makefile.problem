@@ -30,6 +30,14 @@ tests: .tests
 #	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "archive written to ./tests.tar.gz"
 	@touch .tests
 
+tests-combined: .tests terminator
+	@cat tests/?.in tests/??.in terminator > ./tests.in \
+	  && cat tests/?.diff tests/??.diff > ./tests.diff \
+	  && echo "tests written to ./tests.in and ./tests.diff"
+
+tests-separated: .tests
+	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "tests archive written to ./tests.tar.gz"
+
 maketests.sh:
 
 ifeq ($(JUDGES),)
@@ -57,7 +65,7 @@ run-%: compile-%
 
 clean: $(JUDGES:%=clean-%)
 	rm -f ./.prepared ./.tests
-	rm -rf ./tests ./tmp ./tests.tar.gz
+	rm -rf ./tests ./tmp ./tests.tar.gz ./tests.in ./tests.diff
 
 clean-%:
 	@$(MAKE) -C $* clean
