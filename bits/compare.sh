@@ -84,7 +84,7 @@ for index in `seq 1 99`; do
                     valcmd="$validator $infile $difffile $tmpdiff"
                 fi
                 if eval $valcmd > $tmpdet 2>&1 && [ ! -s "$tmpdet" ]; then
-                    printf '%-12s' 'PASSED'
+                    printf '%-12s' "OK($atime)"
                 else
                     printf '\033[31m%-12s\033[0m' 'FAILED!'
                 fi
