@@ -30,15 +30,15 @@ input: .input-stamp
 	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/bits/maketests.sh; fi
 	@touch .input-stamp
 
-diff: .diff-stamp
-.diff-stamp: .input-stamp $(TESTS_TEMPLATES)
-	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
-	@touch .diff-stamp
-
 validate: .validate-stamp
-.validate-stamp: .input-stamp $(TESTS_TEMPLATES)
-	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
+.validate-stamp: .input-stamp
+	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
 	@touch .validate-stamp
+
+diff: .diff-stamp
+.diff-stamp: .input-stamp
+	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
+	@touch .diff-stamp
 
 compare: compile validate
 	@../zzcommon/autotest/bits/compare.sh
