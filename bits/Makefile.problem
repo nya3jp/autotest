@@ -16,26 +16,39 @@ export TIMELIMIT
 
 all: check
 
-prepare: .prepared
-.prepared:
+prepare: .prepared-stamp
+.prepared-stamp:
 	mkdir -p ./tmp ./tests
-	@touch .prepared
+	@touch .prepared-stamp
 
-tests: .tests
-.tests: .prepared $(TESTS_TEMPLATES)
-	@rm -f tests/*.in tests/*.diff
+tests: .tests-stamp
+.tests-stamp: .input-stamp .diff-stamp .validate-stamp
+	@touch .tests-stamp
+
+input: .input-stamp
+.input-stamp: .prepared-stamp $(TESTS_TEMPLATES)
 	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/bits/maketests.sh; fi
-	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
-	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
-#	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "archive written to ./tests.tar.gz"
-	@touch .tests
+	@touch .input-stamp
 
-tests-combined: .tests terminator
+diff: .diff-stamp
+.diff-stamp: .input-stamp $(TESTS_TEMPLATES)
+	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
+	@touch .diff-stamp
+
+validate: .validate-stamp
+.validate-stamp: .input-stamp $(TESTS_TEMPLATES)
+	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
+	@touch .validate-stamp
+
+compare: validate
+	@../zzcommon/autotest/bits/compare.sh
+
+tests-combined: tests terminator
 	@cat tests/?.in tests/??.in terminator > ./tests.in \
 	  && cat tests/?.diff tests/??.diff > ./tests.diff \
 	  && echo "tests written to ./tests.in and ./tests.diff"
 
-tests-separated: .tests
+tests-separated: tests
 	@cd tests && tar cf - *.in *.diff | gzip -c > ../tests.tar.gz && echo "tests archive written to ./tests.tar.gz"
 
 maketests.sh:
@@ -48,7 +61,7 @@ check: compile $(JUDGES:%=check-%)
 	@printf "\\033[36mPASSED ALL TESTS.\\033[0m\n"
 endif
 
-check-%: compile-% .tests .prepared
+check-%: compile-% tests
 	@printf "\\033[32msolution \"$*\": \\033[0m"
 	@../zzcommon/autotest/bits/checkone.sh $*
 
@@ -63,11 +76,17 @@ run-one: compile-$(REFJUDGE)
 run-%: compile-%
 	@$(MAKE) -C $* run
 
+judges:
+	@for i in $(JUDGES); do echo $$i; done
+
+refjudge:
+	@echo $(REFJUDGE)
+
 clean: $(JUDGES:%=clean-%)
-	rm -f ./.prepared ./.tests
+	rm -f ./.*-stamp
 	rm -rf ./tests ./tmp ./tests.tar.gz ./tests.in ./tests.diff
 
 clean-%:
 	@$(MAKE) -C $* clean
 
-.PHONY: all prepare tests check compile run-one
+.PHONY: all prepare tests input diff validate check compile judges refjudge run-one
