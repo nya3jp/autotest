@@ -22,25 +22,21 @@ prepare: .prepared-stamp
 	@touch .prepared-stamp
 
 tests: .tests-stamp
-.tests-stamp: .input-stamp .diff-stamp .validate-stamp
+.tests-stamp: .input-stamp .diff-stamp
 	@touch .tests-stamp
 
 input: .input-stamp
 .input-stamp: .prepared-stamp $(TESTS_TEMPLATES)
 	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/bits/maketests.sh; fi
-	@touch .input-stamp
-
-validate: .validate-stamp
-.validate-stamp: .input-stamp
 	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
-	@touch .validate-stamp
+	@touch .input-stamp
 
 diff: .diff-stamp
 .diff-stamp: .input-stamp
 	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
 	@touch .diff-stamp
 
-compare: compile validate
+compare: compile input
 	@../zzcommon/autotest/bits/compare.sh
 
 tests-combined: tests terminator
@@ -89,4 +85,4 @@ clean: $(JUDGES:%=clean-%)
 clean-%:
 	@$(MAKE) -C $* clean
 
-.PHONY: all prepare tests input diff validate check compile judges refjudge run-one
+.PHONY: all prepare tests input diff check compile judges refjudge run-one
