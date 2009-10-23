@@ -90,6 +90,9 @@ for index in `seq 1 99`; do
                 fi
             fi
         done
+        if [ -f "$namefile" ]; then
+            printf "# %s" `cat $namefile`
+        fi
         echo
     fi
 done
