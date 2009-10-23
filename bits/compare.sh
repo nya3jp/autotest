@@ -32,6 +32,9 @@ for m in ./*/Makefile; do
     fi
 done
 
+# refjudgeの取得
+refjudge=`$MAKE refjudge`
+
 # 各種一時ファイル
 tmptime="./tmp/compare.time"
 tmpout="./tmp/compare.out"
@@ -50,7 +53,11 @@ fi
 # ヘッダ出力
 printf '%-12s' ''
 for judge in $judges; do
-    printf '%-12s' "$judge"
+    if [ "$judge" = "$refjudge" ]; then
+        printf '%-12s' "$judge*"
+    else
+        printf '%-12s' "$judge"
+    fi
 done
 echo
 
