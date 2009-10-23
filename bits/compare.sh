@@ -37,8 +37,8 @@ refjudge=`$MAKE refjudge`
 
 # 各種一時ファイル
 tmptime="./tmp/compare.time"
-tmpout="./tmp/compare.out"
-tmpdiff="./tmp/compare.diff"
+tmprefdiff="./tmp/compare.refjudge.diff"
+tmpcurdiff="./tmp/compare.curjudge.diff"
 tmpdet="./tmp/compare.det"
 
 # validateというスクリプトがあればそれでdiffる
@@ -51,49 +51,81 @@ if [ -f "./validate" ]; then
 fi
 
 # ヘッダ出力
-printf '%-12s' ''
+printf '%-10s| ' 'Solution'
 for judge in $judges; do
-    if [ "$judge" = "$refjudge" ]; then
-        printf '%-12s' "$judge*"
-    else
-        printf '%-12s' "$judge"
-    fi
+    printf '%-12s' "$judge"
 done
+printf '| %-12s' 'Match'
+echo
+printf '%s' '----------+-'
+for judge in $judges; do
+    printf '%s' '------------'
+done
+printf '+-----------'
 echo
 
 for index in `seq 1 99`; do
+    # 入力の存在チェック
     infile=./tests/$index.in
-    if [ -f $infile ]; then
-        printf 'Case %2d:    ' $index
-        difffile=./tests/$index.diff
-        namefile=./tests/.$index.name
-        for judge in $judges; do
-            atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > $tmpout`
-            r=$?
-            if [ $r != 0 ]; then
-                if [ $r = 143 ]; then
-                    printf '\033[31m%-12s\033[0m' 'TLE!'
-                else
-                    printf '\033[31m%-12s\033[0m' 'ERROR!'
-                fi
+    if [ ! -f $infile ]; then
+        continue
+    fi
+
+    # ケース番号を出す
+    printf 'Case %2d   | ' $index
+    difffile=./tests/$index.diff
+    namefile=./tests/.$index.name
+
+    # とりあえず実行してTLE/REをチェック
+    match=true
+    for judge in $judges; do
+        atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > ./tmp/compare.judge.$judge.out`
+        r=$?
+        if [ $r == 0 ]; then
+            printf '%5.2fs%6s' $atime ''
+        else
+            if [ $r = 143 ]; then
+                printf '\033[31m%-12s\033[0m' 'TLE'
             else
-                eval "$normcrlf" < $tmpout > $tmpdiff
-                if [ -z "$validator" ]; then
-                    valcmd="diff -u $difffile $tmpdiff"
-                else
-                    valcmd="$validator $infile $difffile $tmpdiff"
-                fi
-                if eval $valcmd > $tmpdet 2>&1 && [ ! -s "$tmpdet" ]; then
-                    printf '%-12s' "OK($atime)"
-                else
-                    printf '\033[31m%-12s\033[0m' 'FAILED!'
-                fi
+                printf '\033[31m%-12s\033[0m' 'ERROR'
+            fi
+            match=false
+        fi
+    done
+
+    printf '| '
+
+    # 全て解答を出力したらdiffする
+    if eval $match; then
+        # 模範解答を準備
+        eval "$normcrlf" < ./tmp/compare.judge.$refjudge.out > $tmprefdiff
+        for judge in $judges; do
+            eval "$normcrlf" < ./tmp/compare.judge.$judge.out > $tmpcurdiff
+            if [ -z "$validator" ]; then
+                valcmd="diff -u $tmprefdiff $tmpcurdiff"
+            else
+                valcmd="$validator $infile $tmprefdiff $tmpcurdiff"
+            fi
+            if eval $valcmd > $tmpdet 2>&1 && [ ! -s "$tmpdet" ]; then
+                :
+            else
+                match=false
+                break
             fi
         done
-        if [ -f "$namefile" ]; then
-            printf "# %s" `cat $namefile`
+        if eval $match; then
+            printf '%-12s' "PASSED"
+        else
+            printf '\033[31m%-12s\033[0m' 'FAILED'
         fi
-        echo
+    else
+        printf '%-12s' "---"
     fi
+
+    # 入力の名前があれば出力
+    if [ -f "$namefile" ]; then
+        printf "# %s" `cat $namefile`
+    fi
+    echo
 done
 

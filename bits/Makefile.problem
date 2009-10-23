@@ -40,7 +40,7 @@ validate: .validate-stamp
 	@if [ -f ./makediffs ]; then /usr/bin/perl ./makediffs; else ../zzcommon/autotest/bits/makediffs.sh; fi
 	@touch .validate-stamp
 
-compare: validate
+compare: compile validate
 	@../zzcommon/autotest/bits/compare.sh
 
 tests-combined: tests terminator
