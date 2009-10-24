@@ -24,11 +24,19 @@ fi
 judges=
 for m in ./*/Makefile; do
     judge=$(basename $(dirname $m))
-    if echo "$judge" | grep '@' > /dev/null 2>&1; then
+    if [ "`expr substr "$ALL" 1 1`" != "y" ] && echo "$judge" | grep '@' > /dev/null 2>&1; then
         continue
     fi
     if $MAKE -C "$judge" -s src > /dev/null 2>&1; then
         judges="$judges $judge"
+    fi
+done
+
+width=8
+for judge in $judges; do
+    w=`expr \( length "$judge" \) + 2`
+    if [ $w -gt $width ]; then
+        width=$w
     fi
 done
 
@@ -51,15 +59,15 @@ if [ -f "./validate" ]; then
 fi
 
 # ヘッダ出力
-printf '%-10s| ' 'Solution'
+printf '%-8s| ' 'Solution'
 for judge in $judges; do
-    printf '%-12s' "$judge"
+    printf "%-${width}s" "$judge"
 done
 printf '| %-12s' 'Match'
 echo
-printf '%s' '----------+-'
+printf '%s' '--------+-'
 for judge in $judges; do
-    printf '%s' '------------'
+    yes - | head -n $width | tr -d "\012"
 done
 printf '+-----------'
 echo
@@ -72,7 +80,7 @@ for index in `seq 1 99`; do
     fi
 
     # ケース番号を出す
-    printf 'Case %2d   | ' $index
+    printf 'Case %2d | ' $index
     difffile=./tests/$index.diff
     namefile=./tests/.$index.name
 
@@ -82,7 +90,8 @@ for index in `seq 1 99`; do
         atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > ./tmp/compare.judge.$judge.out`
         r=$?
         if [ $r = 0 ]; then
-            printf '%5.2fs%6s' $atime ''
+            disptime=`printf '%5.2fs' $atime`
+            printf "%-${width}s" $disptime
         else
             if [ $r = 143 ]; then
                 printf '\033[31m%-12s\033[0m' 'TLE'
