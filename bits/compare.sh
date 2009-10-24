@@ -81,7 +81,7 @@ for index in `seq 1 99`; do
     for judge in $judges; do
         atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > ./tmp/compare.judge.$judge.out`
         r=$?
-        if [ $r == 0 ]; then
+        if [ $r = 0 ]; then
             printf '%5.2fs%6s' $atime ''
         else
             if [ $r = 143 ]; then
