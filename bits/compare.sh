@@ -97,13 +97,29 @@ for index in `seq 1 99`; do
     for judge in $acjudges -- $wajudges; do
         if [ $judge = -- ]; then
             dontcare=y
+            # 模範解答を準備
+            eval "$normcrlf" < ./tmp/compare.judge.$refjudge.out > $tmprefdiff
             continue
         fi
         atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > ./tmp/compare.judge.$judge.out`
         r=$?
         if [ $r = 0 ]; then
             disptime=`printf '%5.2fs' $atime`
-            printf "%-${width}s  " "$disptime"
+            if [ $dontcare = y ]; then
+                eval "$normcrlf" < ./tmp/compare.judge.$judge.out > $tmpcurdiff
+                if [ -z "$validator" ]; then
+                    valcmd="diff -u $tmprefdiff $tmpcurdiff"
+                else
+                    valcmd="$validator $infile $tmprefdiff $tmpcurdiff"
+                fi
+                if eval $valcmd > $tmpdet 2>&1 && [ ! -s "$tmpdet" ]; then
+                    printf "%-${width}s  " "$disptime"
+                else
+                    printf "\033[30;43m%-${width}s\033[0m  " 'WA'
+                fi
+            else
+                printf "%-${width}s  " "$disptime"
+            fi
         else
             errcolor="37;41"
             if [ $dontcare = y ]; then
@@ -124,8 +140,6 @@ for index in `seq 1 99`; do
 
     # 全て解答を出力したらdiffする
     if [ $match = y ]; then
-        # 模範解答を準備
-        eval "$normcrlf" < ./tmp/compare.judge.$refjudge.out > $tmprefdiff
         for judge in $acjudges; do
             eval "$normcrlf" < ./tmp/compare.judge.$judge.out > $tmpcurdiff
             if [ -z "$validator" ]; then
