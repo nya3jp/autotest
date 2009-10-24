@@ -124,7 +124,7 @@ for index in `seq 1 99`; do
 
     # 入力の名前があれば出力
     if [ -f "$namefile" ]; then
-        printf "# %s" `cat $namefile`
+        printf "# %s" "`cat $namefile`"
     fi
     echo
 done
