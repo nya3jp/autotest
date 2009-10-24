@@ -101,6 +101,10 @@ for index in `seq 1 99`; do
             eval "$normcrlf" < ./tmp/compare.judge.$refjudge.out > $tmprefdiff
             continue
         fi
+        if [ $dontcare = y ] && [ $match = n ]; then
+            printf "%-${width}s  " "  ---"
+            continue
+        fi
         atime=`"$ulscript" "$TIMELIMIT" $MAKE -C "$judge" -s run < $infile 2>&1 > ./tmp/compare.judge.$judge.out`
         r=$?
         if [ $r = 0 ]; then
@@ -160,7 +164,7 @@ for index in `seq 1 99`; do
             printf '\033[37;41m%s\033[0m      ' 'FAILED'
         fi
     else
-        printf '%-10s  ' "---"
+        printf '%-10s  ' " ---"
     fi
 
     # 入力の名前があれば出力
