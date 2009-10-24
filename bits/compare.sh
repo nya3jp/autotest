@@ -26,7 +26,7 @@ wajudges=
 for m in ./*/Makefile; do
     judge=$(basename $(dirname $m))
     if echo "$judge" | grep '@' > /dev/null 2>&1; then
-        if [ "`expr substr "$ALL" 1 1`" = "y" ]; then
+        if [ "`echo "$ALL" | cut -b 1`" = "y" ]; then
             wajudges="$wajudges $judge"
         fi
         continue
