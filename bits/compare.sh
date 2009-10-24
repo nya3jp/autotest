@@ -38,7 +38,7 @@ done
 
 width=8
 for judge in $acjudges $wajudges; do
-    w=`expr \( length "$judge" \)`
+    w=`printf "%s" "$judge" | wc -c`
     if [ $w -gt $width ]; then
         width=$w
     fi
