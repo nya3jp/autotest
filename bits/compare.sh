@@ -65,10 +65,10 @@ fi
 # ヘッダ出力
 printf '%-8s| ' 'Solution'
 for judge in $acjudges; do
-    printf "\033[32m%-${width}s\033[0m  " "$judge"
+    printf "\033[1;32m%-${width}s\033[0m  " "$judge"
 done
 for judge in $wajudges; do
-    printf "\033[33m%-${width}s\033[0m  " "$judge"
+    printf "\033[1;33m%-${width}s\033[0m  " "$judge"
 done
 printf '| %-12s' 'Match'
 echo
@@ -126,7 +126,7 @@ for index in `seq 1 99`; do
             fi
         else
             errcolor="37;41"
-            if [ $dontcare = y ]; then
+            if [ $dontcare = y ] && [ $r = 143 ]; then
                 errcolor="30;43"
             fi
             if [ $r = 143 ]; then
@@ -159,9 +159,9 @@ for index in `seq 1 99`; do
             fi
         done
         if [ $match = y ]; then
-            printf '%s      ' 'PASSED'
+            printf '\033[37;44m%s\033[0m    ' ' PASSED '
         else
-            printf '\033[37;41m%s\033[0m      ' 'FAILED'
+            printf '\033[37;41m%s\033[0m    ' ' FAILED '
         fi
     else
         printf '%-10s  ' " ---"
