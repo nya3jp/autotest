@@ -50,6 +50,18 @@ tests-separated: tests
 maketests.sh:
 
 ifeq ($(JUDGES),)
+check-combined:
+	@printf "\\033[33mWARNING: No solution yet. skipping...\\033[0m\n"
+else
+check-combined: compile $(JUDGES:%=check-combined-%)
+	@printf "\\033[36mPASSED ALL TESTS.\\033[0m\n"
+endif
+
+check-combined-%: compile-% tests-combined
+	@printf "\\033[32msolution \"$*\": \\033[0m"
+	@../zzcommon/autotest/bits/checkcombined.sh $*
+
+ifeq ($(JUDGES),)
 check:
 	@printf "\\033[33mWARNING: No solution yet. skipping...\\033[0m\n"
 else
