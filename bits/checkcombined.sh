@@ -7,7 +7,7 @@ if [ -z "$judge" ] || [ -z "$MAKE" ]; then
     exit 1;
 fi
 
-TIMELIMIT=10
+TIMELIMIT=60
 # TIMELIMITが設定されていなければ落ちる
 #if [ -z "$TIMELIMIT" ]; then
 #    printf '\033[31mERROR: TIMELIMIT is not set!\033[0m\n'
