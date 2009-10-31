@@ -9,7 +9,7 @@ if [ ! -d "./tests-template" ]; then echo; exit; fi
 normcrlf=`dirname $0`/normcrlf.pl
 
 index=1
-for i in `find ./tests-template -type f -name '*.in' | sort`; do
+for i in `find ./tests-template -maxdepth 1 -type f -name '*.in' | sort`; do
     cp -f "$i" tests/$index.in
     echo `basename "$i"` > tests/.$index.name
     prefix=`echo "$i" | sed 's/.in$//'`
