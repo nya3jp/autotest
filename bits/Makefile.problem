@@ -28,7 +28,7 @@ tests: .tests-stamp
 input: .input-stamp
 .input-stamp: .prepared-stamp $(TESTS_TEMPLATES)
 	@if [ -f ./maketests ]; then /usr/bin/perl ./maketests; else ../zzcommon/autotest/bits/maketests.sh; fi
-	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[33mWARNING: no input validation!\033[0m\n'; fi
+	@if [ -f ./checktests ]; then /usr/bin/perl ./checktests; else printf '\033[30;43mWARNING: no input validation!\033[0m\n'; fi
 	@touch .input-stamp
 
 diff: .diff-stamp

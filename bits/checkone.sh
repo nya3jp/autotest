@@ -102,6 +102,6 @@ done
 printf ' \033[1m(max real: %.2f)\033[0m\n' $maxtime
 
 if $ignore_fail; then
-    printf '\033[33mWARNING: this solution is not intended to pass the tests!\033[0m\n'
+    printf '\033[30;43mWARNING: this solution is not intended to pass the tests!\033[0m\n'
 fi
 
