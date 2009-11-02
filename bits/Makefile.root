@@ -17,6 +17,13 @@ check-combined-%:
 	@printf "\\033[1;4;36m***** $*\\033[0m\n"
 	@$(MAKE) -C $* check-combined
 
+tests-combined: $(addprefix tests-combined-,$(PROBLEMS))
+	@printf "\\033[36mDone.\\033[0m\n"
+
+tests-combined-%:
+	@printf "\\033[1;4;36m***** $*\\033[0m\n"
+	@$(MAKE) -C $* tests-combined
+
 check: $(addprefix check-,$(PROBLEMS))
 check-%:
 	@printf "\\033[1;4;36m***** $*\\033[0m\n"
