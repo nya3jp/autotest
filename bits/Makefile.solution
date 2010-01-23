@@ -67,7 +67,7 @@ ifeq ($(suffix $(SRC)),.java)
 $(EXE): $(SRC)
 	$(JAVAC) $(JFLAGS) -d . -cp '$(shell $(PATHCONV) $(JAVA_CLASSPATH))' $(SRC)
 	@echo '#!/bin/sh' > $@
-	@printf "java -Xmx256m -Dline.separator='\012' -cp '%s' '%s'\n" "`$(PATHCONV) '$(JAVA_CLASSPATH)'`" '$(JAVA_MAIN)' >> $@
+	@printf "exec java -Xmx256m -Dline.separator='\012' -cp '%s' '%s'\n" "`$(PATHCONV) '$(JAVA_CLASSPATH)'`" '$(JAVA_MAIN)' >> $@
 	@chmod +x $@
 endif
 
