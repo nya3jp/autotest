@@ -24,9 +24,10 @@ esac
 ## ulimitが使えない環境(cygwinおまえのことだ!!!)があるのでコメントアウト
 #ulimit -St $TIMELIMIT > /dev/null 2>&1
 
-# ジャッジ名に@を含むときは失敗を無視する
+# ジャッジ名に_を含むときは失敗を無視する
+# 20100123 svn1.6.5以降で@が特別な意味を持つため、_に変更した(野田)
 ignore_fail=false
-echo "$judge" | grep '@' > /dev/null 2>&1 && ignore_fail=true
+echo "$judge" | grep '_' > /dev/null 2>&1 && ignore_fail=true
 
 # 各種一時ファイル
 tmptime="./tmp/checkone.time"

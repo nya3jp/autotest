@@ -1,7 +1,8 @@
 # common Makefile for the problem directory
 
 JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*/Makefile))))
-REJECT_JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*@*/Makefile))))
+# 20100123 svn1.6.5ˆÈ~‚Å@‚ª“Á•Ê‚ÈˆÓ–¡‚ğ‚Â‚½‚ßA_‚É•ÏX‚µ‚½(–ì“c)
+REJECT_JUDGES := $(strip $(notdir $(patsubst %/Makefile,%,$(wildcard ./*_*/Makefile))))
 ACCEPT_JUDGES := $(filter-out $(REJECT_JUDGES),$(JUDGES))
 REFJUDGE ?= $(firstword $(ACCEPT_JUDGES))
 

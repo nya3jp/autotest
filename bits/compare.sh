@@ -25,7 +25,8 @@ acjudges=
 wajudges=
 for m in ./*/Makefile; do
     judge=$(basename $(dirname $m))
-    if echo "$judge" | grep '@' > /dev/null 2>&1; then
+    # 20100123 svn1.6.5以降で@が特別な意味を持つため、_に変更した(野田)
+    if echo "$judge" | grep '_' > /dev/null 2>&1; then
         if [ "`echo "$ALL" | cut -b 1`" = "y" ]; then
             wajudges="$wajudges $judge"
         fi
